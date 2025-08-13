@@ -1,0 +1,32 @@
+Location,Time,Tree Number,Leaf Number,Water Potential (mPa),Length (cm),Mass (g)
+"South facing, top of slope",6:57,9,1,0.3,4.5,0.25
+"South facing, top of slope",6:57,9,2,0.2,4,0.35
+"South facing, top of slope",6:57,9,3,0.2,3,0.2
+"South facing, top of slope",6:57,9,4,0.17,0.15,2.2
+"North facing, mid slope",6:57,112,1,0.2,1.7,0.1
+"North facing, mid slope",6:57,112,2,1.2,0.15,2.7
+"North facing, top of slope",6:42,145,1,0.3,2.7,0.1
+"North facing, top of slope",6:42,145,2,0.4,2.6,0.1
+"North facing, top of slope",6:42,145,3,0.4,2.6,0.1
+"North facing, top of slope",6:48,145,1,0.72,3.5,0.2
+"North facing, top of slope",6:48,145,2,0.68,4,0.2
+"North facing, top of slope",6:48,145,3,0.9,3.8,0.2
+"South facing, top of slope",10:42,90,1,0.53,3.7,0.2
+"South facing, top of slope",11:42,90,2,0.42,4,0.3
+"South facing, bottom of slope",10:28,88,1,0.85,3.8,0.1
+"South facing, bottom of slope",10:28,88,2,0.3,4.4,0.2
+"North facing, top of slope",10:08,145,1,0.84,3.9,0.2
+"North facing, top of slope",10:08,145,2,0.46,4.2,0.2
+"North facing, mid slope",10:15,101,1,0.5,4.1,0.4
+"North facing, mid slope",10:15,101,2,0.18,4.6,0.4
+"South facing, top of slope",7:00,52,1,0.16,3.8,0.2
+"South facing, top of slope",7:00,52,2,0.25,2.6,0.2
+"North facing, mid slope",7:06,116,1,0.53,4.2,0.3
+"North facing, mid slope",7:06,116,2,0.5,3.9,0.3
+"North facing, mid slope",7:06,116,3,0.15,4.1,0.3
+"North facing, top of slope",6:51,105,1,0.75,3.9,0.2
+"North facing, top of slope",6:51,105,2,0.4,3.4,0.2
+"North facing, top of slope",6:51,105,3,0.49,4.4,0.3
+"South facing, top of slope",12:12,9,1,0.16,4.9,0.4
+"South facing, top of slope",12:12,9,2,0.18,2.8,0.3
+"South facing, bottom of slope",14:10,88,1,2.05,,

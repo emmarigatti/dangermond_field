@@ -1,0 +1,86 @@
+Location,Time,Tree Number,Sunlit/Shaded,Direction Facing,Leaf Number,Water potential
+"North facing, mid slope",5:33,116,Pre-dawn,N,1,2.23
+"North facing, mid slope",5:33,116,Pre-dawn,S,2,1.35
+"North facing, mid slope",5:40,112,Pre-dawn,N,1,0.5
+"North facing, top of slope",5:47,98,Pre-dawn,N,1,1.1
+"North facing, top of slope",5:50,110,Pre-dawn,N,1,1.26
+"North facing, top of slope",5:50,110,Pre-dawn,S,2,1.25
+"North facing, top of slope",5:54,145,Pre-dawn,S,1,1.1
+"North facing, top of slope",5:54,145,Pre-dawn,N,2,1.15
+"North facing, mid slope",5:55,101,Pre-dawn,S,1,1.1
+"North facing, mid slope",5:55,101,Pre-dawn,N,2,0.9
+"North facing, top of slope",5:57,98,Pre-dawn,S,2,0.7
+"South facing, bottom of slope",5:57,88,Pre-dawn,N,1,0.89
+"South facing, bottom of slope",5:57,88,Pre-dawn,S,2,0.85
+"South facing, bottom of slope",5:58,100,Pre-dawn,S,1,1
+"South facing, bottom of slope",5:58,100,Pre-dawn,N,2,0.9
+"South facing, bottom of slope",6:03,93,Pre-dawn,N,1,1.35
+"South facing, bottom of slope",6:03,93,Pre-dawn,S,2,0.75
+"South facing, top of slope",6:08,52,Pre-dawn,S,1,2
+"South facing, top of slope",6:08,52,Pre-dawn,N,2,1.24
+"South facing, bottom of slope",11:20,100,Shaded,N,1,2.05
+"South facing, bottom of slope",11:25,88,Shaded,N,1,3.75
+"South facing, bottom of slope",11:25,88,Sunlit,S,1,2.5
+"South facing, bottom of slope",11:30,93,Sunlit,S,1,3.5
+"South facing, bottom of slope",11:30,93,Shaded,N,1,1.9
+"North facing, top of slope",11:32,145,Sunlit,S,1,1.75
+"South facing, bottom of slope",11:35,52,Shaded,N,1,1.2
+"South facing, bottom of slope",11:35,52,Shaded,N,2,1.6
+"South facing, top of slope",11:35,52,Shaded,S,1,3
+"North facing, top of slope",11:38,98,Sunlit,S,1,3.75
+"North facing, mid slope",11:39,98,Shaded,SW,1,1.8
+"North facing, top of slope",11:42,145,Shaded,NW,2,2
+"North facing, top of slope",11:45,110,Shaded,N,1,2
+"North facing, top of slope",11:45,110,Sunlit,SE,2,1.2
+"North facing, mid slope",11:46,110,Sunlit,SE,1,2.05
+"North facing, mid slope",11:50,116,Shaded,SE,1,3.6
+"South facing, bottom of slope",12:19,93,Sunlit,S,1,2
+"North facing, top of slope",12:20,101,Shaded,N,1,2.4
+"North facing, mid slope",12:20,101,Sunlit,SE,1,2
+"South facing, bottom of slope",12:20,93,Shaded,N,1,3.3
+"South facing, bottom of slope",12:22,100,Sunlit,S,1,3.4
+"South facing, bottom of slope",12:22,100,Sunlit,S,2,3.7
+"North facing, mid slope",12:22,116,Shaded,NW,1,2.68
+"North facing, mid slope",12:24,112,Shaded,S,1,1.8
+"North facing, mid slope",12:25,112,Sunlit,SW,1,1.75
+"North facing, top of slope",12:27,98,Shaded,SE,1,2.24
+"North facing, top of slope",12:27,98,Sunlit,S,1,0.5
+"South facing, bottom of slope",12:28,100,Shaded,N,1,3.75
+"North facing, top of slope",12:29,110,Shaded,NW,1,3
+"North facing, top of slope",12:30,110,Sunilt,S,1,3.8
+"South facing, top of slope",12:30,52,Shaded,S,1,3.85
+"South facing, top of slope",12:30,52,Shaded,S,1,3.85
+"North facing, top of slope",12:32,145,Shaded,NW,1,2.55
+"South facing, bottom of slope",12:40,88,Sunlit,S,1,2.05
+"South facing, bottom of slope",13:46,88,Sunlit,S,1,2.75
+"South facing, bottom of slope",13:47,88,Shaded,N,1,2.5
+"South facing, bottom of slope",13:49,100,Sunlit,S,1,1.9
+"South facing, bottom of slope",13:50,93,Shaded,N,1,2.5
+"South facing, bottom of slope",13:51,93,Sunlit,S,1,2.8
+"North facing, mid slope",13:53,112,Shaded,N,1,1.8
+"South facing, bottom of slope",13:54,52,Sunlit,S,1,2.05
+"North facing, top of slope",13:54,110,Sunlit,S,1,2.1
+"North facing, top of slope",13:55,110,Sunlit,S,1,2.6
+"North facing, top of slope",14:00,98,Sunlit,E,1,4.15
+"North facing, top of slope",14:04,98,Sunlit,S,1,1.65
+"North facing, top of slope",14:06,110,Sunli,N,1,3
+"North facing, top of slope",14:06,110,Shaded,S,2,2.1
+"North facing, mid slope",14:08,145,Shaded,N,1,1.9
+"South facing, top of slope",14:08,145,Shaded,NW,1,2.1
+"North facing, top of slope",14:30,98,Shaded,SE,1,1.5
+"South facing, bottom of slope",14:37,88,Shaded,N,1,2.75
+"South facing, bottom of slope",14:40,100,Shaded,N,1,2.5
+"North facing, mid slope",14:41,101,Shaded,S,1,2.6
+"North facing, mid slope",14:41,101,Shaded,S,2,2.1
+"North facing, mid slope",14:42,116,Shaded,N,1,3.4
+"South facing, bottom of slope",14:43,93,Sunlit,S,1,2.9
+"North facing, mid slope",14:43,112,Sunlit,N,1,1.7
+"North facing, mid slope",14:44,112,Shaded,SW,1,2.7
+"North facing, mid slope",14:44,112,Shaded,SW,2,2.7
+"North facing, top of slope",14:44,101,Shaded,N,1,1.85
+"South facing, top of slope",14:47,52,Shaded,S,1,1.5
+"South facing, top of slope",14:48,52,Shaded,N,1,2
+"North facing, mid slope",14:52,112,Sunlit,SW,1,3
+"North facing, top of slope",14:52,145,Sunlit,S,1,3.05
+"North facing, top of slope",14:55,110,Shaded,S,1,2.8
+"South facing, bottom of slope",15:36,88,Sunlit,S,1,4.1
