@@ -1,4 +1,4 @@
-# Load libraries
+#----------------------------------------------------------------------- Load libraries
 
 library(tidyr)
 library(dplyr)
@@ -6,13 +6,14 @@ library(ggplot2)
 library(lubridate)
 library(zoo)
 
-# Set working directory
+#----------------------------------------------------------------------- Set working directory
 setwd("~/Desktop/GitHub/dangermond_field/pressure_bomb")
 
-# Read in data
-psi_data <- read.csv("20250812_psi.csv")
+#----------------------------------------------------------------------- Read in data
+psi_data <- read.csv("20250904_psi.csv")
+psi_data <- psi_data %>% filter(Tree != 88)
 
-# Group tree by location and split into leaf and stem
+#----------------------------------------------------------------------- Group tree by location and split into leaf and stem
 
 psi_data <- psi_data %>%
   mutate(Group = case_when(
@@ -29,30 +30,50 @@ summary <- psi_data %>%
     mean_psi = mean(Water.pot, na.rm = TRUE),
     sd_psi   = sd(Water.pot, na.rm = TRUE),
     se_psi   = sd_psi / sqrt(n()),
-    n        = n()
+    n        = n(),
+    mean_tlp = mean(TLP, na.rm = TRUE),
+    sd_tlp = sd(TLP, na.rm = TRUE),
+    se_tlp   = sd_tlp / sqrt(n())
+    
   )
 
-# Box plot
+#----------------------------------------------------------------------- Box plot
 
 ggplot(
-  psi_data %>% filter(Time == "pd"),
-  aes(x = factor(Group), y = Water.pot, fill = Organ)
+  psi_data %>% filter(Organ == "Leaf"),
+  aes(x = factor(Group), y = Water.pot, fill = Time)
 ) +
   geom_boxplot(position = position_dodge(width = 0.8)) +
-  scale_fill_manual(
-    values = c("Leaf" = "#1b9e77", "Stem" = "#d95f02")  
-  ) +
-  geom_point()
+  #scale_fill_manual(values = c("Leaf" = "#1b9e77", "Stem" = "#d95f02")) +
+  geom_point() +
   labs(
     x = "Group",
     y = "Water Potential (MPa)",
     fill = "Time",
-    title = "Predawn Stem and Leaf Water Potentials",
+    title = "Leaf vs Stem Predawns",
     subtitle = "By location across a hillslope gradient"
   ) +
   theme_minimal()
+#----------------------------------------------------------------------- Distribution
 
-# Difference between pd and md
+ggplot(
+  psi_data %>%
+    filter(Organ == "Stem", Time %in% c("pd", "md"), !is.na(Water.pot)),
+  aes(x = Water.pot, fill = Time)
+) +
+  geom_density(alpha = 0.6) +
+  labs(
+    title = "Stem Midday vs Predawn",
+    x = "Water Potential (MPa)",
+    y = "Density",
+    fill = "Time"
+  ) +
+  #scale_fill_manual(values = c("Leaf" = "#1b9e77", "Stem" = "#d95f02")) +
+  theme_minimal(base_size = 12)
+
+
+
+#----------------------------------------------------------------------- Difference between pd and md
 
 delta_psi_time <- psi_data %>%
   pivot_wider(names_from = Time, values_from = Water.pot) %>%
@@ -60,22 +81,20 @@ delta_psi_time <- psi_data %>%
 
 delta_psi_organ <- psi_data %>%
   pivot_wider(names_from = Organ, values_from = Water.pot) %>%
-  mutate(delta_psi = Stem - Leaf)
+  mutate(delta_psi = Leaf - Stem)
 
-ggplot(delta_psi_time, aes(x = factor(Group), y = delta_psi, fill = Organ)) +
+ggplot(delta_psi_organ, aes(x = factor(Group), y = delta_psi, fill = Time)) +
   geom_boxplot(position = position_dodge(width = 0.8)) +
-  scale_fill_manual(
-    values = c("Leaf" = "#1b9e77", "Stem" = "#d95f02")  
-  ) +
+  #scale_fill_manual(values = c("Leaf" = "#1b9e77", "Stem" = "#d95f02")) +
   labs(
     x = "Group",
     y = expression(Delta*psi),
-    fill = "Organ",
+    fill = "Time",
     title = expression(Delta*psi~"Water Potential"),,
-    subtitle = "Midday - Predawn water potential"
+    subtitle = "Leaf - Stem water potential"
   ) +
   theme_minimal()
-  
+ #----------------------------------------------------------------------- Difference between pd and md 
 
 psi_wide <- psi_data %>%
   mutate(Organ = factor(Organ, levels = c("Leaf", "Stem"))) %>%
@@ -84,124 +103,174 @@ psi_wide <- psi_data %>%
     values_from = Water.pot
   )
 
-ggplot(psi_wide, aes(x = md, y = pd, color = Group)) +
+psi_wide <- psi_data %>%
+  select(Tree, Group, Time, Organ, Water.pot) %>%
+  pivot_wider(names_from = Organ, values_from = Water.pot) %>%  # Leaf & Stem columns
+  filter(is.finite(Leaf), is.finite(Stem))
+
+ggplot(psi_wide, aes(x = Stem, y = Leaf, color = Group)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE) +
-  facet_wrap(~ Organ) +
+  facet_wrap(~ Time) +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "black") +
   labs(
-    x = "Pre-dawn",
-    y = "Midday",
+    x = "Stem",
+    y = "Leaf",
     title = "Stem–Leaf Coordination Across Hillslope Gradient"
   ) +
   theme_minimal()
 
-# TLP stuff
+#----------------------------------------------------------------------- TLP stuff
 
-nm  <- ls(pattern = "^tlp_(leaf|stem)_\\d+$")   
-val <- mget(nm, inherits = TRUE)                
+tlp_leaf <- read.csv("/Users/emmarigatti/Desktop/GitHub/pv_curves/csvs/sept2025/tlp_summary_leaf.csv")
+tlp_leaf <- tlp_leaf[,-1]
+tlp_leaf[5, 1] <- "098"
 
-tlp_lookup <- tibble(name = nm, TLP = unlist(val)) %>%
-  mutate(
-    Organ_raw = stringr::str_match(name, "^tlp_(leaf|stem)_\\d+$")[,2],
-    Tree_chr  = stringr::str_match(name, "^tlp_(?:leaf|stem)_(\\d+)$")[,2],
-    Organ     = stringr::str_to_title(Organ_raw),  
-    Tree      = as.integer(Tree_chr)                
-  ) %>%
-  dplyr::select(Tree, Organ, TLP)
+tlp_stem <- read.csv("/Users/emmarigatti/Desktop/GitHub/pv_curves/csvs/sept2025/tlp_summary_stem.csv")
+tlp_stem <- tlp_stem[,-1]
+tlp_stem[5, 1] <- "098"
+
+series_leaf <- readRDS("/Users/emmarigatti/Desktop/GitHub/pv_curves/csvs/sept2025/tlp_summary_leaf.rds")
+series_stem <- readRDS("/Users/emmarigatti/Desktop/GitHub/pv_curves/csvs/sept2025/tlp_summary_stem.rds")
+
+#----------------------------------------------------------------------- Join to psi data
+
+tlp_leaf <- tlp_leaf %>%
+  mutate(Tree = sprintf("%03d", as.integer(Tree)))
+
+
+tlp_stem <- tlp_stem %>%
+  mutate(Tree = sprintf("%03d", as.integer(Tree)))
 
 psi_data <- psi_data %>%
-  mutate(
-    Tree  = as.integer(as.character(Tree)), 
-    Organ = stringr::str_to_title(stringr::str_trim(Organ))
-  ) %>%
-  left_join(tlp_lookup, by = c("Tree", "Organ"))
+  mutate(Tree = sprintf("%03d", as.integer(Tree)))
 
-psi_data$TLP <- psi_data$TLP * -1
+psi_data <- psi_data %>%
+  # Join in stem and leaf TLP tables
+  left_join(tlp_stem %>% select(Tree, TLP_stem = TLP), by = "Tree") %>%
+  left_join(tlp_leaf %>% select(Tree, TLP_leaf = TLP), by = "Tree") %>%
+  # Single TLP column: pick stem if Organ == Stem, leaf if Organ == Leaf
+  mutate(TLP = case_when(
+    Organ == "Stem" ~ TLP_stem,
+    Organ == "Leaf" ~ TLP_leaf,
+    TRUE ~ NA_real_
+  )) %>%
+  select(-TLP_stem, -TLP_leaf)
 
-tlp_per_tree <- psi_data %>%
-  filter(!is.na(TLP), Organ %in% c("Leaf","Stem")) %>%
-  distinct(Tree, Group, Organ, TLP) %>%
-  mutate(Tree = factor(sprintf("%03d", Tree)))
-psi_data_clean <- subset(psi_data, !is.na(TLP))
-psi_data_clean <- psi_data %>%
-  filter(!is.na(TLP))
-
-ggplot(psi_data_clean, aes(x = factor(Group), y = TLP, color = Organ)) +
-  geom_point() +
-  scale_color_manual(
-    values = c("Leaf" = "#1b9e77", "Stem" = "#d95f02")  
-  ) +
-  labs(
-    x = "Tree",
-    y = expression(psi),
-    color = "Organ",
-    title = "TLP",
-  ) +
-  theme_minimal()
-
-
-
-
-
-library(dplyr)
-library(ggplot2)
-
-# 1) Predawn water potentials (boxes)
-pd <- psi_data %>%
-  filter(Time == "md", Organ %in% c("Leaf","Stem")) %>%
-  mutate(Group = factor(Group))
-
-# 2) One TLP per Group × Organ (mean across trees in the group)
-tlp_avg <- psi_data_clean %>%
-  filter(!is.na(TLP), Organ %in% c("Leaf","Stem")) %>%
-  group_by(Group, Organ) %>%
-  summarise(TLP = mean(TLP, na.rm = TRUE), .groups = "drop") %>%
-  mutate(Group = factor(Group))
-
-# 3) Shared dodge so boxes and TLP points align
-dodge <- position_dodge(width = 0.75)
-
-ggplot() +
-  # Boxplots of predawn water potential by Organ
-  geom_boxplot(
-    data = pd,
-    aes(x = Group, y = Water.pot, fill = Organ),
-    position = dodge,
-    width = 0.6,
-    outlier.shape = NA,
-    alpha = 0.7
-  ) +
-  # (optional) raw predawn points
-  # geom_point(
-  #   data = pd,
-  #   aes(x = Group, y = Water.pot, fill = Organ),
-  #   position = dodge,
-  #   size = 1.6,
-  #   shape = 21,
-  #   alpha = 0.4,
-  #   stroke = 0
-  # ) +
-  # Mean TLP point per Group × Organ
-  geom_point(
-    data = tlp_avg,
-    aes(x = Group, y = TLP, color = Organ),
-    position = dodge,
-    size = 3
-  ) +
+#----------------------------------------------------------------------- Plot TLP by slope separated into Leaf and Stem
+ggplot(
+  psi_data %>%
+    filter(!is.na(TLP), Time == "pd") %>%
+    mutate(Organ = factor(Organ, levels = c("Leaf", "Stem"))),
+  aes(x = Group, y = TLP, fill = Organ)
+) +
+  geom_boxplot(position = position_dodge(width = 0.8), width = 0.7, outlier.shape = NA) +
+  geom_jitter(aes(group = interaction(Group, Organ)),
+              position = position_jitterdodge(jitter.width = 0.15, dodge.width = 0.8),
+              alpha = 0.5, size = 1.6) +
+  labs(x = "Group", y = "TLP (MPa)", fill = "Organ", title = "TLP by Slope Position") +
   scale_fill_manual(
-    name = "Organ",
     values = c("Leaf" = "#1b9e77", "Stem" = "#d95f02")
   ) +
-  scale_color_manual(
-    name = "Organ",
-    values = c("Leaf" = "#1b9e77", "Stem" = "#d95f02")
-  ) +
+  scale_y_reverse() +
+  theme_minimal(base_size = 12) +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1),
+        panel.grid.minor = element_blank())
+
+#----------------------------------------------------------------------- Distribution of leaf TLPs
+ggplot(tlp_leaf, aes(x = TLP)) +
+  geom_density(fill = "#1b9e77", alpha = 0.6) +
+  scale_x_reverse() +  
   labs(
-    x = "Group",
-    y = "Water Potential (MPa)",
-    title = "Midday Water Potentials",
-    subtitle = "Dots = Mean TLP"
+    title = "Leaf TLPs",
+    x = "TLP (MPa)",
+    y = "Density"
   ) +
-  theme_minimal()
+  theme_minimal(base_size = 12)
+
+ggplot(tlp_stem, aes(x = TLP)) +
+  geom_density(fill = "#d95f02", alpha = 0.6) +
+  scale_x_reverse() +  
+  labs(
+    title = "Stem TLPs",
+    x = "TLP (MPa)",
+    y = "Density"
+  ) +
+  theme_minimal(base_size = 12)
+
+#----------------------------------------------------------------------- Plot both densities together
+tlp_leaf2 <- tlp_leaf %>%
+  mutate(Organ = "Leaf")
+
+tlp_stem2 <- tlp_stem %>%
+  mutate(Organ = "Stem")
+
+tlp_all <- bind_rows(tlp_leaf2, tlp_stem2)
+
+ggplot(tlp_all, aes(x = TLP, fill = Organ)) +
+  geom_density(alpha = 0.6) +
+  scale_x_reverse() +
+  labs(
+    title = "Leaf vs Stem TLPs",
+    x = "TLP (MPa)",
+    y = "Density",
+    fill = "Organ"
+  ) +
+  scale_fill_manual(values = c("Leaf" = "#1b9e77", "Stem" = "#d95f02")) +
+  theme_minimal(base_size = 12)
+
+#----------------------------------------------------------------------- Plot pd and md by TLP
+
+psi_binned <- psi_data %>%
+  filter(Organ == "Stem") %>%
+  mutate(
+    TLP_abs = abs(TLP), 
+    TLP_bin = cut(TLP_abs,
+                  breaks = seq(0, 5, by = 1),    
+                  labels = c("0–1", "1–2", "2–3", "3–4", "4–5"),
+                  right = FALSE, include.lowest = TRUE)
+  )
+
+ggplot(psi_binned, aes(x = TLP_bin, y = Water.pot, fill = Time)) +
+  geom_boxplot(outlier.shape = NA, width = 0.7, alpha = 0.7) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.15, dodge.width = 0.7),
+              alpha = 0.6, size = 1.8) +
+  labs(
+    title = "Stem Predawn Water Potentials by TLP",
+    x = "TLP",
+    y = "Predawn",
+    fill = "Time"
+  ) +
+  #scale_fill_manual(values = c("Leaf" = "#1b9e77", "Stem" = "#d95f02")) +
+  theme_minimal(base_size = 13) +
+  theme(axis.text.x = element_text(angle = 20, hjust = 1))
+
+#----------------------------------------------------------------------- Plot pd and md vs TLP in 1:1
+
+org <- psi_data %>%
+  filter(Organ == "Leaf", Time %in% c("pd", "md")) %>%
+  filter(is.finite(TLP), is.finite(Water.pot))
+
+ggplot(org, aes(x = abs(TLP), y = Water.pot, color = Group)) +
+  geom_point(size = 2) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 1) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "black") +
+  facet_wrap(~ Time) +
+  labs(
+    title = "Leaf Predawn and Midday vs TLP",
+    x = "TLP",
+    y = "MPa",
+    color = "Group"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(panel.grid.minor = element_blank())
+
+
+
+
+
+
+
+
+
 
