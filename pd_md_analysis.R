@@ -5,6 +5,7 @@ library(dplyr)
 library(ggplot2)
 library(lubridate)
 library(zoo)
+library(purrr)
 
 #----------------------------------------------------------------------- Set working directory
 setwd("~/Desktop/GitHub/dangermond_field/pressure_bomb")
@@ -40,17 +41,17 @@ summary <- psi_data %>%
 #----------------------------------------------------------------------- Box plot
 
 ggplot(
-  psi_data %>% filter(Organ == "Leaf"),
-  aes(x = factor(Group), y = Water.pot, fill = Time)
+  psi_data %>% filter(Time == "md"),
+  aes(x = factor(Group), y = Water.pot, fill = Organ)
 ) +
   geom_boxplot(position = position_dodge(width = 0.8)) +
-  #scale_fill_manual(values = c("Leaf" = "#1b9e77", "Stem" = "#d95f02")) +
+  scale_fill_manual(values = c("Leaf" = "#1b9e77", "Stem" = "#d95f02")) +
   geom_point() +
   labs(
     x = "Group",
     y = "Water Potential (MPa)",
     fill = "Time",
-    title = "Leaf vs Stem Predawns",
+    title = "Leaf vs Stem Middays",
     subtitle = "By location across a hillslope gradient"
   ) +
   theme_minimal()
@@ -265,12 +266,71 @@ ggplot(org, aes(x = abs(TLP), y = Water.pot, color = Group)) +
   theme_minimal(base_size = 13) +
   theme(panel.grid.minor = element_blank())
 
+#----------------------------------------------------------------------- 1:1 binned by TLP
+# Faceted by time
+tlp_key <- psi_data %>%
+  filter(Organ == "Stem", Time == "pd") %>%
+  select(Tree, TLP_pd = TLP) %>%
+  distinct()
 
+psi_wide <- psi_data %>%
+  select(Tree, Time, Organ, Water.pot) %>%
+  pivot_wider(names_from = Organ, values_from = Water.pot) %>%
+  filter(is.finite(Leaf), is.finite(Stem)) %>%
+  left_join(tlp_key, by = "Tree") %>%
+  mutate(
+    TLP_abs = abs(TLP_pd),
+    TLP_bin = cut(
+      TLP_abs,
+      breaks = seq(0, 5, 1),
+      labels = c("0–1", "1–2", "2–3", "3–4", "4–5"),
+      right = FALSE, include.lowest = TRUE
+    )
+  )
 
+ggplot(psi_wide, aes(x = pd, y = md, color = TLP_bin)) +
+  geom_point(size = 2) +
+  geom_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~ Time) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "black") +
+  labs(
+    x = "Predawn",
+    y = "Midday",
+    color = "Leaf TLP bin",
+    title = "Stem–Leaf Coordination Binned by Stem TLP"
+  ) +
+  theme_minimal()
 
+# Faceted by Organ
+tlp_key <- psi_data %>%
+  filter(Organ == "Stem", Time == "pd") %>%
+  select(Tree, TLP_pd = TLP) %>%
+  distinct()
 
+psi_timewide <- psi_data %>%
+  select(Tree, Organ, Time, Water.pot) %>%
+  tidyr::pivot_wider(names_from = Time, values_from = Water.pot) %>%
+  dplyr::filter(is.finite(pd), is.finite(md)) %>%
+  dplyr::left_join(tlp_key, by = "Tree") %>%
+  dplyr::mutate(
+    TLP_abs = abs(TLP_pd),
+    TLP_bin = cut(TLP_abs,
+                  breaks = seq(0, 5, 1),
+                  labels = c("0–1","1–2","2–3","3–4","4–5"),
+                  right = FALSE, include.lowest = TRUE)
+  )
 
+ggplot(psi_timewide, aes(x = pd, y = md, color = TLP_bin)) +
+  geom_point(size = 2) +
+  geom_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~ Organ) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "black") +
+  labs(
+    x = "Predawn",
+    y = "Midday",
+    color = "Stem TLP bin",
+    title = "Pd-Md Coordination Binned by Stem TLP"
+  ) +
+  theme_minimal(base_size = 13)
 
-
-
-
+#----------------------------------------------------------------------- 1:1 binned by TLP
